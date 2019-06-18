@@ -4,6 +4,7 @@ var express = require("express"),
 	mongoose = require("mongoose"),
 	passport = require("passport"),
 	LocalStrategy = require("passport-local"),
+	methodOverride = require("method-override"),
 	Campground = require("./models/campground"),
 	Comment = require("./models/comment"),
 	User = require("./models/user"),
@@ -18,8 +19,9 @@ mongoose.connect("mongodb+srv://devstvn:devstvn123@cluster0-yntnc.mongodb.net/ye
 mongoose.set("useFindAndModify", false);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
+app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
-//seedDB();
+seedDB();
 
 // PASSPORT CONFIGURATION
 app.use(require("express-session")({
@@ -42,6 +44,6 @@ app.use("/", indexRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 app.use("/campgrounds", campgroundRoutes);
 
-app.listen(3000, 'localhost', function() {
+app.listen(3000, '0.0.0.0', function() {
 	console.log("The YelpCamp server has started!");
 });
