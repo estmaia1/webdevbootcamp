@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router({ mergeParams: true });
 var Campground = require("../models/campground");
+var Comment = require("../models/comment");
 
 // INDEX - show all campgrounds
 router.get("/", function(req, res) {
@@ -76,15 +77,28 @@ router.put("/:id", checkCampgroundOwnership, function(req, res){
 });
 
 // DESTROY CAMPGROUND ROUTE
-router.delete("/:id", function(req, res){
-	Campground.findByIdAndRemove(req.params.id, function (err){
-		if(err){
-			res.redirect("/campgrounds");
-		} else {
-			res.redirect("/campgrounds");
-		};
-	});
+router.delete("/:id", checkCampgroundOwnership, (req, res) => {
+    Campground.findByIdAndRemove(req.params.id, (err, campgroundRemoved) => {
+        if (err) {
+            console.log(err);
+        }
+        Comment.deleteMany( {_id: { $in: campgroundRemoved.comments } }, (err) => {
+            if (err) {
+                console.log(err);
+            }
+            res.redirect("/campgrounds");
+        });
+    });
 });
+// router.delete("/:id", checkCampgroundOwnership, function(req, res){
+// 	Campground.findByIdAndRemove(req.params.id, function (err){
+// 		if(err){
+// 			res.redirect("/campgrounds");
+// 		} else {
+// 			res.redirect("/campgrounds");
+// 		};
+// 	});
+// });
 
 // middleware
 function isLoggedIn(req, res, next) {
