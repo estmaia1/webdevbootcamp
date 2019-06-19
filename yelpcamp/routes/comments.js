@@ -44,8 +44,8 @@ router.post("/", isLoggedIn, function(req, res) {
 	});
 });
 
-router.get("/:comment_id/edit", function(req, res){
-	res.render("/comments/edit");
+router.get("/:comment_id/edit", function(req, res) {
+	res.render("/comments/edit", { campgrounds_id: req.params.id });
 });
 
 // middleware
